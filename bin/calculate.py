@@ -29,7 +29,7 @@ def simulate(startdate, enddate, symbols, allocations):
 	datetime_timeofday = dt.timedelta(hours=16)
 	trading_days = du.getNYSEdays(datetime_start, datetime_end, datetime_timeofday)
 	
-	dataobj = da.DataAccess("Yahoo")
+	dataobj = da.DataAccess("Yahoo", cachestalltime=0)
 	interested_value_types = ["close", "actual_close"]
 	interested_data = dataobj.get_data(trading_days, symbols, interested_value_types)
 	d_data = dict(zip(interested_value_types, interested_data))

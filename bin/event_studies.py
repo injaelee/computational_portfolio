@@ -30,10 +30,15 @@ def find_events(ls_symbols, d_data):
 
 			# Event is found if the symbol is down more then 3% while the
 			# market is up more then 2%
-			if f_symprice_yest >= 9.0 and f_symprice_today < 9.0:
+			if f_symprice_yest >= 6.0 and f_symprice_today < 6.0:
 				df_events[s_sym].ix[ldt_timestamps[i]] = 1
 				total_number_of_events += 1
-
+				print ldt_timestamps[i].year,",",ldt_timestamps[i].month,",",ldt_timestamps[i].day,\
+				      ",", s_sym, ",BUY,100"
+				sell_idx = min(i+5,len(ldt_timestamps)-1)
+				sell_ts = ldt_timestamps[sell_idx]
+				print sell_ts.year,",",sell_ts.month,",",sell_ts.day,\
+				      ",", s_sym, ",SELL,100"
 
 	print "Total number of events:[" + str(total_number_of_events) + "]"
 	return df_events
@@ -50,27 +55,14 @@ def fill_in_the_blanks(d_data, interested_value_types):
 #remain constant
 interested_value_types = ["actual_close"]
 datetime_timeofday = dt.timedelta(hours=16)
+#datetime_start = dt.datetime(2012, 1, 1)
+#datetime_end = dt.datetime(2012,12,31)
 datetime_start = dt.datetime(2008, 1, 1)
 datetime_end = dt.datetime(2009,12,31)
 
-dataobj = da.DataAccess("Yahoo")
-symbols = dataobj.get_symbols_from_list("sp5002008")
-symbols.append('SPY')
-
-trading_days = du.getNYSEdays(datetime_start, datetime_end, datetime_timeofday)
-d_data = dataobj.get_data(trading_days, symbols, interested_value_types)
-d_data = dict(zip(interested_value_types, d_data))
-d_data = fill_in_the_blanks(d_data, interested_value_types)
-
-df_events = find_events(symbols, d_data)
-print int(np.nansum(df_events.values))
-
-ep.eventprofiler(df_events, d_data, i_lookback=20, i_lookforward=20,
-s_filename='2008.pdf', b_market_neutral=True, b_errorbars=True,
-s_market_sym='SPY')
 
 
-
+dataobj = da.DataAccess("Yahoo", cachestalltime=0)
 symbols = dataobj.get_symbols_from_list("sp5002012")
 symbols.append('SPY')
 
@@ -83,5 +75,5 @@ df_events = find_events(symbols, d_data)
 print int(np.nansum(df_events.values))
 
 ep.eventprofiler(df_events, d_data, i_lookback=20, i_lookforward=20,
-s_filename='2012.pdf', b_market_neutral=True, b_errorbars=True,
+s_filename='2008.pdf', b_market_neutral=True, b_errorbars=True,
 s_market_sym='SPY')
